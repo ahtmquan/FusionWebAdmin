@@ -1,0 +1,308 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="Data" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityContainer Name="FusionFaceDb" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="ApplicationMasters" EntityType="Data.ApplicationMaster" />
+    <EntitySet Name="DateMasters" EntityType="Data.DateMaster" />
+    <EntitySet Name="FunctionMasters" EntityType="Data.FunctionMaster" />
+    <EntitySet Name="GroupMasters" EntityType="Data.GroupMaster" />
+    <EntitySet Name="MenuMasters" EntityType="Data.MenuMaster" />
+    <EntitySet Name="ModuleMasters" EntityType="Data.ModuleMaster" />
+    <EntitySet Name="Permissions" EntityType="Data.Permission" />
+    <EntitySet Name="People" EntityType="Data.Person" />
+    <EntitySet Name="Photos" EntityType="Data.Photo" />
+    <EntitySet Name="TransactionMasters" EntityType="Data.TransactionMaster" />
+    <EntitySet Name="TransactionSummaries" EntityType="Data.TransactionSummary" />
+    <EntitySet Name="UserGroups" EntityType="Data.UserGroup" />
+    <EntitySet Name="UserMasters" EntityType="Data.UserMaster" />
+    <AssociationSet Name="FK_ModuleMaster_ApplicationMaster" Association="Data.FK_ModuleMaster_ApplicationMaster">
+      <End Role="ApplicationMaster" EntitySet="ApplicationMasters" />
+      <End Role="ModuleMaster" EntitySet="ModuleMasters" />
+    </AssociationSet>
+    <AssociationSet Name="FK_FunctionMaster_ModuleMaster" Association="Data.FK_FunctionMaster_ModuleMaster">
+      <End Role="ModuleMaster" EntitySet="ModuleMasters" />
+      <End Role="FunctionMaster" EntitySet="FunctionMasters" />
+    </AssociationSet>
+    <AssociationSet Name="FK_MenuMaster_FunctionMaster" Association="Data.FK_MenuMaster_FunctionMaster">
+      <End Role="FunctionMaster" EntitySet="FunctionMasters" />
+      <End Role="MenuMaster" EntitySet="MenuMasters" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Permission_FunctionMaster" Association="Data.FK_Permission_FunctionMaster">
+      <End Role="FunctionMaster" EntitySet="FunctionMasters" />
+      <End Role="Permission" EntitySet="Permissions" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Permission_GroupMaster" Association="Data.FK_Permission_GroupMaster">
+      <End Role="GroupMaster" EntitySet="GroupMasters" />
+      <End Role="Permission" EntitySet="Permissions" />
+    </AssociationSet>
+    <AssociationSet Name="FK_UserGroup_GroupMaster" Association="Data.FK_UserGroup_GroupMaster">
+      <End Role="GroupMaster" EntitySet="GroupMasters" />
+      <End Role="UserGroup" EntitySet="UserGroups" />
+    </AssociationSet>
+    <AssociationSet Name="FK_PersonID" Association="Data.FK_PersonID">
+      <End Role="Person" EntitySet="People" />
+      <End Role="Photo" EntitySet="Photos" />
+    </AssociationSet>
+    <AssociationSet Name="FK_UserGroup_UserMaster" Association="Data.FK_UserGroup_UserMaster">
+      <End Role="UserMaster" EntitySet="UserMasters" />
+      <End Role="UserGroup" EntitySet="UserGroups" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="ApplicationMaster">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Name" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="ModuleMasters" Relationship="Data.FK_ModuleMaster_ApplicationMaster" FromRole="ApplicationMaster" ToRole="ModuleMaster" />
+  </EntityType>
+  <EntityType Name="DateMaster">
+    <Key>
+      <PropertyRef Name="DateID" />
+    </Key>
+    <Property Name="DateID" Type="DateTime" Nullable="false" Precision="0" />
+    <Property Name="Year" Type="Int32" Nullable="false" />
+    <Property Name="Month" Type="Int32" Nullable="false" />
+    <Property Name="Day" Type="Int32" />
+  </EntityType>
+  <EntityType Name="FunctionMaster">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
+    <Property Name="Name" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
+    <Property Name="ModuleID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="ModuleMaster" Relationship="Data.FK_FunctionMaster_ModuleMaster" FromRole="FunctionMaster" ToRole="ModuleMaster" />
+    <NavigationProperty Name="MenuMasters" Relationship="Data.FK_MenuMaster_FunctionMaster" FromRole="FunctionMaster" ToRole="MenuMaster" />
+    <NavigationProperty Name="Permissions" Relationship="Data.FK_Permission_FunctionMaster" FromRole="FunctionMaster" ToRole="Permission" />
+  </EntityType>
+  <EntityType Name="GroupMaster">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Guid" Nullable="false" />
+    <Property Name="Name" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
+    <Property Name="Description" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+    <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+    <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="ModifiedAt" Type="DateTime" Precision="3" />
+    <Property Name="ModifiedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="AccessLevel" Type="Int32" />
+    <NavigationProperty Name="Permissions" Relationship="Data.FK_Permission_GroupMaster" FromRole="GroupMaster" ToRole="Permission" />
+    <NavigationProperty Name="UserGroups" Relationship="Data.FK_UserGroup_GroupMaster" FromRole="GroupMaster" ToRole="UserGroup" />
+  </EntityType>
+  <EntityType Name="MenuMaster">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Guid" Nullable="false" />
+    <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Description" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
+    <Property Name="Enabled" Type="Boolean" Nullable="false" />
+    <Property Name="Position" Type="Int32" Nullable="false" />
+    <Property Name="ParentID" Type="Guid" />
+    <Property Name="Icon" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="FunctionID" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+    <Property Name="Url" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="FunctionMaster" Relationship="Data.FK_MenuMaster_FunctionMaster" FromRole="MenuMaster" ToRole="FunctionMaster" />
+  </EntityType>
+  <EntityType Name="ModuleMaster">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="ApplicationID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="ApplicationMaster" Relationship="Data.FK_ModuleMaster_ApplicationMaster" FromRole="ModuleMaster" ToRole="ApplicationMaster" />
+    <NavigationProperty Name="FunctionMasters" Relationship="Data.FK_FunctionMaster_ModuleMaster" FromRole="ModuleMaster" ToRole="FunctionMaster" />
+  </EntityType>
+  <EntityType Name="Permission">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Guid" Nullable="false" />
+    <Property Name="GroupID" Type="Guid" Nullable="false" />
+    <Property Name="FunctionID" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
+    <Property Name="Enabled" Type="Boolean" Nullable="false" />
+    <NavigationProperty Name="FunctionMaster" Relationship="Data.FK_Permission_FunctionMaster" FromRole="Permission" ToRole="FunctionMaster" />
+    <NavigationProperty Name="GroupMaster" Relationship="Data.FK_Permission_GroupMaster" FromRole="Permission" ToRole="GroupMaster" />
+  </EntityType>
+  <EntityType Name="Person">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Guid" Nullable="false" />
+    <Property Name="Fullname" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="false" />
+    <Property Name="IdentityNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="DOB" Type="DateTime" Precision="0" />
+    <Property Name="Nationality" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Company" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="PhoneNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Address" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Status" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+    <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="ModifiedAt" Type="DateTime" Nullable="false" Precision="3" />
+    <NavigationProperty Name="Photos" Relationship="Data.FK_PersonID" FromRole="Person" ToRole="Photo" />
+  </EntityType>
+  <EntityType Name="Photo">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Guid" Nullable="false" />
+    <Property Name="Name" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="false" />
+    <Property Name="Path" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+    <Property Name="Data" Type="Binary" MaxLength="Max" FixedLength="false" />
+    <Property Name="PersonID" Type="Guid" Nullable="false" />
+    <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+    <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+    <NavigationProperty Name="Person" Relationship="Data.FK_PersonID" FromRole="Photo" ToRole="Person" />
+  </EntityType>
+  <EntityType Name="TransactionMaster">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Guid" Nullable="false" />
+    <Property Name="TranxType" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
+    <Property Name="ObjectID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="ObjectName" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
+    <Property Name="RecordedDate" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="ClientID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="TransactionSummary">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Guid" Nullable="false" />
+    <Property Name="TranxType" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
+    <Property Name="ClientID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="RecordedDate" Type="DateTime" Nullable="false" Precision="0" />
+    <Property Name="Total" Type="Int32" Nullable="false" />
+  </EntityType>
+  <EntityType Name="UserGroup">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Guid" Nullable="false" />
+    <Property Name="UserID" Type="Guid" Nullable="false" />
+    <Property Name="GroupID" Type="Guid" Nullable="false" />
+    <NavigationProperty Name="GroupMaster" Relationship="Data.FK_UserGroup_GroupMaster" FromRole="UserGroup" ToRole="GroupMaster" />
+    <NavigationProperty Name="UserMaster" Relationship="Data.FK_UserGroup_UserMaster" FromRole="UserGroup" ToRole="UserMaster" />
+  </EntityType>
+  <EntityType Name="UserMaster">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Guid" Nullable="false" />
+    <Property Name="Username" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
+    <Property Name="Password" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
+    <Property Name="Fullname" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="false" />
+    <Property Name="Email" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+    <Property Name="Status" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+    <Property Name="LastLoginTime" Type="DateTime" Precision="3" />
+    <Property Name="LastPasswordChangeTime" Type="DateTime" Precision="3" />
+    <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+    <Property Name="ModifiedAt" Type="DateTime" Precision="3" />
+    <Property Name="CreatedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+    <Property Name="ModifiedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+    <Property Name="PasswordTryCount" Type="Int32" />
+    <Property Name="AccountBlockedExpiry" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="UserGroups" Relationship="Data.FK_UserGroup_UserMaster" FromRole="UserMaster" ToRole="UserGroup" />
+  </EntityType>
+  <Association Name="FK_ModuleMaster_ApplicationMaster">
+    <End Type="Data.ApplicationMaster" Role="ApplicationMaster" Multiplicity="1" />
+    <End Type="Data.ModuleMaster" Role="ModuleMaster" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ApplicationMaster">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="ModuleMaster">
+        <PropertyRef Name="ApplicationID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_FunctionMaster_ModuleMaster">
+    <End Type="Data.ModuleMaster" Role="ModuleMaster" Multiplicity="1" />
+    <End Type="Data.FunctionMaster" Role="FunctionMaster" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ModuleMaster">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="FunctionMaster">
+        <PropertyRef Name="ModuleID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_MenuMaster_FunctionMaster">
+    <End Type="Data.FunctionMaster" Role="FunctionMaster" Multiplicity="0..1" />
+    <End Type="Data.MenuMaster" Role="MenuMaster" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="FunctionMaster">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="MenuMaster">
+        <PropertyRef Name="FunctionID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Permission_FunctionMaster">
+    <End Type="Data.FunctionMaster" Role="FunctionMaster" Multiplicity="1" />
+    <End Type="Data.Permission" Role="Permission" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="FunctionMaster">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Permission">
+        <PropertyRef Name="FunctionID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Permission_GroupMaster">
+    <End Type="Data.GroupMaster" Role="GroupMaster" Multiplicity="1" />
+    <End Type="Data.Permission" Role="Permission" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="GroupMaster">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Permission">
+        <PropertyRef Name="GroupID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_UserGroup_GroupMaster">
+    <End Type="Data.GroupMaster" Role="GroupMaster" Multiplicity="1" />
+    <End Type="Data.UserGroup" Role="UserGroup" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="GroupMaster">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="UserGroup">
+        <PropertyRef Name="GroupID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_PersonID">
+    <End Type="Data.Person" Role="Person" Multiplicity="1" />
+    <End Type="Data.Photo" Role="Photo" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Person">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Photo">
+        <PropertyRef Name="PersonID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_UserGroup_UserMaster">
+    <End Type="Data.UserMaster" Role="UserMaster" Multiplicity="1" />
+    <End Type="Data.UserGroup" Role="UserGroup" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="UserMaster">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="UserGroup">
+        <PropertyRef Name="UserID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>

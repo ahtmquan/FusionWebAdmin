@@ -1,0 +1,45 @@
+﻿@model Fusion.Face.WebAdmin.Models.LoginFormModel
+
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_Public.cshtml";
+}
+
+<div class="sufee-login d-flex align-content-center flex-wrap">
+    <div class="container">
+        <div class="login-content">
+            <div class="login-logo">
+                <a href="index.html">
+                    <img class="align-content" src="~/images/logo.png" alt="">
+                </a>
+            </div>
+            <div class="login-form">
+                @using (Html.BeginForm("DoLogin", "Account", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        <label>User ID</label>
+                        @Html.EditorFor(model => model.Info.Username, new { htmlAttributes = new { @placeholder = "Username", @class = "form-control" } })
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        @Html.EditorFor(model => model.Info.Password, new { htmlAttributes = new { @placeholder = "Password", @type = "password", @class = "form-control" } })
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox"> Remember Me
+                        </label>
+                        <label class="pull-right">
+                            <a href="#">Forgotten Password?</a>
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-flat m-b-30 m-t-30">Sign in</button>
+                }
+
+                <div class="text-center">
+                    <p>@Html.Label(Model.ErrorMessage)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

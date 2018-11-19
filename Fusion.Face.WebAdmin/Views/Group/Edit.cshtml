@@ -1,0 +1,288 @@
+﻿@using Fusion.Face.WebAdmin.Models
+@model Fusion.Face.WebAdmin.Models.EditGroupFormModel
+@{
+    ViewBag.Title = "Edit Group";
+}
+
+@section SubHead
+{
+    <link rel="stylesheet" href="~/assets/css/jquery-ui.min.css">
+}
+
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>@ViewBag.Title</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li class="active">Dashboard</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="content mt-3">
+    <div class="col-lg-12">
+        <div class="card-footer">
+            <button id="btnSave" type="button" class="btn btn-primary btn-sm" onclick="SaveGroup();">
+                <i class="fa fa-dot-circle-o"></i> Save
+            </button>
+            <button id="btnCancel" type="button" class="btn btn-danger btn-sm" onclick="Cancel();">
+                <i class="fa fa-ban"></i> Cancel
+            </button>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                Group Info
+            </div>
+            <div class="card-body card-block">
+                <div class="row form-group">
+                    <div class="col col-md-3"><label for="txtName" class=" form-control-label">Name</label></div>
+                    <div class="col-12 col-md-9">
+                        <input type="text" id="txtName" name="text-input" placeholder="Text" class="form-control" value="@Model.Info.Name">
+                        <input type="hidden" id="txtId" value="@Model.Info.ID" />
+                        <small class="form-text text-muted">This is a help text</small>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-3"><label for="txtDescription" class=" form-control-label">Description</label></div>
+                    <div class="col-12 col-md-9">
+                        <input type="text" id="txtDescription" name="text-input" placeholder="Text" class="form-control" value="@Model.Info.Description">
+                        <small class="form-text text-muted">This is a help text</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                Users
+            </div>
+            <div class="card-body card-block">
+                <div class="row form-group">
+                    <div class="col col-md-3"><label for="txtUser" class=" form-control-label">Add User</label></div>
+                    <div class="col col-md-9">
+                        <div class="input-group">
+                            <input type="text" id="txtUser" name="input2-group2" placeholder="Usernam" class="form-control">
+                            <div class="input-group-btn"><button class="btn btn-primary" onclick="AddUser();">Add</button></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-3"><label for="txtUser" class=" form-control-label">List of Users</label></div>
+                    <div id="lstUsers" class="col-12 col-md-9">
+                        @foreach (UserInfo uInfo in Model.Users)
+                        {
+                            <div class="col-12 col-md-9">
+                                @uInfo.Fullname (@uInfo.Username)
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="RemoveUser('@uInfo.ID');">Remove</button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                Permisisons
+            </div>
+            <div class="card-body card-block">
+
+                @{
+                    string moduleName = "";
+                    string printName = "";
+                }
+
+                @foreach (PermissionInfo pInfo in Model.Permisisons)
+                {
+                    if (moduleName != pInfo.ModuleName)
+                    {
+                        moduleName = pInfo.ModuleName;
+                        printName = pInfo.ModuleName;
+                    }
+                    else
+                    {
+                        printName = "";
+                    }
+
+                    <div class="row form-group">
+                        <div class="col col-md-3"><label class=" form-control-label">@printName</label></div>
+                        <div class="col col-md-9">
+                            <div class="form-check">
+                                <div class="checkbox">
+                                    <label for="p_@pInfo.FunctionID" class="form-check-label ">
+
+                                        @if (pInfo.Enabled)
+                                        {
+                                            <input type="checkbox" id="p_@pInfo.FunctionID" name="checkbox1" value="@pInfo.FunctionID" class="form-check-input" checked>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="p_@pInfo.FunctionID" name="checkbox1" value="@pInfo.FunctionID" class="form-check-input">
+                                        }
+
+                                        @pInfo.FunctionName
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-12">
+        <div class="card-footer">
+            <button id="btnSave" type="button" class="btn btn-primary btn-sm" onclick="SaveGroup();">
+                <i class="fa fa-dot-circle-o"></i> Save
+            </button>
+            <button id="btnCancel" type="button" class="btn btn-danger btn-sm" onclick="Cancel();">
+                <i class="fa fa-ban"></i> Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+@section SubScript{
+    <script src="~/assets/js/vendor/jquery-ui.min.js"></script>
+
+    <script>
+
+        var masterUsers = '@Model.JsonUsers';
+        masterUsers = $("<div/>").html(masterUsers).text();
+        masterUsers = JSON.parse(masterUsers);
+
+        var selectedUser = null;
+
+
+        function SaveGroup() {
+            var data = {};
+            data.Info = {};
+            data.Info.ID = $("#txtId").val();
+            data.Info.Name = $("#txtName").val();
+            data.Info.Description = $("#txtDescription").val();
+
+            data.Permisisons = [];
+
+            var objs = $('[id^=p_F]');
+            objs.each(function (index) {
+                if ($(this).prop("checked")) {
+                    var p = {};
+                    p.ID = "";
+                    p.GroupID = data.Info.ID;
+                    p.FunctionID = $(this).val();
+                    data.Permisisons.push(p);
+                }
+            });
+
+            data.Users = masterUsers;
+            //alert(JSON.stringify(data.Permisisons));
+            PostSave(data);
+        }
+
+        function PostSave(data) {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Content("~")Group/SaveEdit",
+                data: data,
+                success: PostSaveCallback,
+                dataType: "json"
+            });
+        }
+
+        function PostSaveCallback(data) {
+            //alert(JSON.stringify(data));
+            Cancel();
+        }
+
+        function Cancel() {
+            window.location.href =  "@Url.Content("~")Group/Index";
+        }
+
+        $("#txtUser").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "@Url.Content("~")Group/FindUser",
+                    dataType: "json",
+                    data: {
+                        keyword: request.term
+                    },
+                    success: function (data) {
+
+                        var newData = [];
+
+                        $.each(data, function (i, item) {
+                            var d = { "id": item.ID, "label": item.Fullname, "value": item.Username };
+                            newData.push(d);
+                        });
+
+                        response(newData);
+                    }
+                });
+            },
+            minLength: 2,
+            select: function (event, ui) {
+                //log("Selected: " + ui.item.value + " aka " + ui.item.id);
+                selectedUser = ui.item;
+            }
+        });
+
+        //alert(JSON.stringify(masterUsers));
+
+        function AddUser() {
+            var userName = $("#txtUser").val();
+            //alert(userName);
+            if (userName != '' && selectedUser != null) {
+                if (FindUser(selectedUser.id) == null) {
+                    var newUser = { "ID": selectedUser.id, "Username": selectedUser.value, "Fullname": selectedUser.label };
+                    masterUsers.push(newUser);
+                    RefreshUsers();
+                }
+            }
+        }
+
+        function FindUser(id) {
+            var foundusers = $.grep(masterUsers, function (item) { return item.ID == id; });
+            if (foundusers != null) {
+                return foundusers[0];
+            } else {
+                return null;
+            }
+        }
+
+        function RemoveUser(id) {
+            masterUsers = $.grep(masterUsers, function (item) { return item.ID != id; });
+            RefreshUsers();
+        }
+
+        function RefreshUsers() {
+
+            var htmlContent = '';
+
+            $.each(masterUsers, function (i, item) {
+                htmlContent += '<div class="col-12 col-md-9">'
+                                + item.Fullname + ' (' + item.Username + ')'
+                                + '<button type="button" class="btn btn-outline-danger btn-sm" onclick="RemoveUser(\'' + item.ID +'\');">Remove</button>'
+                                + '</div>';
+            });
+
+            $('#lstUsers').html(htmlContent);
+        }
+
+    </script>
+}

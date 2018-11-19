@@ -1,0 +1,151 @@
+﻿@{
+    ViewBag.Title = "Report - Transaction";
+}
+
+@section SubHead
+{
+    <link rel="stylesheet" href="~/assets/css/lib/datatable/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="~/assets/css/jquery-ui.min.css">
+    <link rel="stylesheet" href="~/assets/css/jquery-ui.theme.min.css" />
+}
+
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>@ViewBag.Title</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li class="active">Reports</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="content mt-3">
+    <div class="card">
+        <div class="card-header">
+            <strong class="card-title">Search</strong>
+        </div>
+        <div class="card-body">
+            <div class="row form-group">
+                <div class="col-4">
+                    <label for="txtKeyword" class="control-label mb-1">Keyword</label>
+                    <input id="txtKeyword" name="txtKeyword" type="text" class="form-control" aria-required="true" aria-invalid="false" placeholder="Enter your keyword here">
+                </div>
+                <div class="col-4">
+                    <label for="txtStartDate" class="control-label mb-1">Start Date</label>
+                    <input id="txtStartDate" name="txtStartDate" type="text" class="form-control" aria-required="true" aria-invalid="false" placeholder="Start Date">
+                </div>
+                <div class="col-4">
+                    <label for="txtEndDate" class="control-label mb-1">End Date</label>
+                    <input id="txtEndDate" name="txtEndDate" type="text" class="form-control" aria-required="true" aria-invalid="false" placeholder="End Date">
+                </div>
+            </div>
+            <div class="form-group">
+                <button id="payment-button" type="button" onclick="Refresh();" class="btn btn-success btn-sm">
+                    <i class="fa fa-search fa-lg"></i>&nbsp;
+                    <span id="payment-button-amount">Search</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+    <table id="dtMain" class="table table-striped table-bordered" style="width:100%"></table>
+</div>
+
+
+@section SubScript{
+
+    <script src="~/assets/js/lib/data-table/datatables.min.js"></script>
+        <script src="~/assets/js/lib/data-table/dataTables.bootstrap.min.js"></script>
+    <script src="~/assets/js/vendor/jquery-ui.min.js"></script>
+
+    <script type="text/javascript">
+
+        function InitControls() {
+
+            $('#txtStartDate').prop('readonly', true);
+            $('#txtEndDate').prop('readonly', true);
+
+            $("#txtStartDate").datepicker({
+                showOtherMonths: true,
+                selectOtherMonths: true
+            });
+
+            $("#txtStartDate").datepicker("option", "dateFormat", 'yy-mm-dd');
+
+
+            $("#txtEndDate").datepicker({
+                showOtherMonths: true,
+                selectOtherMonths: true
+            });
+
+            $("#txtEndDate").datepicker("option", "dateFormat", 'yy-mm-dd');
+        }
+
+        function Refresh() {
+            $("#dtMain").DataTable().ajax.reload();
+        }
+
+        $(document).ready(function () {
+
+            InitControls();
+
+            $('#dtMain').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "bFilter": false,
+                "pagingType": "full_numbers",
+                "ajax":
+                    {
+                        "type": "POST",
+                        "url": "/Report/SearchTransaction",
+                        "contentType": 'application/json; charset=utf-8',
+                        'data': function (data) {
+
+                            var startDate = $('#txtStartDate').val();
+                            var endDate = $('#txtEndDate').val();
+
+                            data.search.fields = ["startDate", "endDate"];
+                            data.search.values = [startDate, endDate];
+
+                            data.search.value = $("#txtKeyword").val();
+                            return data = JSON.stringify(data);
+                        }
+                    },
+                "sAjaxDataProp": "data",
+                "columns": [
+                    { "data": "TranxType", "className": "left", "title": "Transaction Type" },
+                    {
+                        "data": "ObjectID",
+                        "className": "left",
+                        "title": "Object ID"
+                    },
+                    {
+                        "data": "ObjectName",
+                        "className": "left",
+                        "title": "Object Name"
+                    },
+                    {
+                        "data": "RecordedDateString",
+                        "className": "left",
+                        "title": "Recorded Date"
+                    },
+                    {
+                        "data": "ClientID",
+                        "className": "left",
+                        "title": "Client ID"
+                    }
+                ]
+            });
+        });
+    </script>
+}

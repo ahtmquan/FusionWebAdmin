@@ -1,0 +1,284 @@
+﻿@{
+    ViewBag.Title = "Transaction Summary";
+}
+
+@section SubHead
+{
+    <link rel="stylesheet" href="~/assets/css/jquery-ui.min.css">
+    <link rel="stylesheet" href="~/assets/css/jquery-ui.theme.min.css" />
+}
+
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>@ViewBag.Title</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li class="active">Reports</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="content mt-3">
+    <div class="card">
+        <div class="card-header">
+            <strong class="card-title">Search</strong>
+        </div>
+        <div class="card-body">
+            <div class="row form-group">
+                <div class="col-4">
+                    <label for="txtStartDate" class="control-label mb-1">Start Date</label>
+                    <input id="txtStartDate" name="txtStartDate" type="text" class="form-control" aria-required="true" aria-invalid="false" placeholder="Start Date">
+                </div>
+                <div class="col-4">
+                    <label for="txtEndDate" class="control-label mb-1">End Date</label>
+                    <input id="txtEndDate" name="txtEndDate" type="text" class="form-control" aria-required="true" aria-invalid="false" placeholder="End Date">
+                </div>
+            </div>
+            <div class="form-group">
+                <button id="payment-button" type="button" onclick="ReloadData();" class="btn btn-success btn-sm">
+                    <i class="fa fa-search fa-lg"></i>&nbsp;
+                    <span id="payment-button-amount">Search</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h4 class="mb-3">Graph</h4>
+            <canvas id="mainChart"></canvas>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <strong class="card-title">Table</strong>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Date</th>
+                        <th scope="col">Register</th>
+                        <th scope="col">Predict</th>
+                    </tr>
+                </thead>
+                <tbody id="mainBody">
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+
+@section SubScript{
+    <script src="~/assets/js/vendor/jquery-ui.min.js"></script>
+    <script src="~/assets/js/lib/chart-js/Chart.bundle.js"></script>
+
+    <script type="text/javascript">
+
+        var myChart = null;
+        var ctx = document.getElementById("mainChart");
+        ctx.height = 50;
+
+        function InitControls() {
+
+            $('#txtStartDate').prop('readonly', true);
+            $('#txtEndDate').prop('readonly', true);
+
+            $("#txtStartDate").datepicker({
+                showOtherMonths: true,
+                selectOtherMonths: true
+            });
+            $("#txtStartDate").datepicker("option", "dateFormat", 'yy-mm-dd');
+
+
+            $("#txtEndDate").datepicker({
+                showOtherMonths: true,
+                selectOtherMonths: true
+            });
+            $("#txtEndDate").datepicker("option", "dateFormat", 'yy-mm-dd');
+        }
+
+        function ReloadDataTable(chartData) {
+            var htmlContent = '';
+
+            $.each(chartData.labels, function (i, item) {
+                htmlContent += '<tr><td>' + item + '</td ><td>' + chartData.datasets[0].data[i] + '</td><td>' + chartData.datasets[1].data[i] + '</td></tr>';
+            });
+
+            $('#mainBody').html(htmlContent);
+        }
+
+        function UpdateChart(chart, chartData) {
+
+            chart.data.labels.length = 0;
+            chart.data.datasets.forEach((dataset) => {
+                dataset.data.length = 0;
+            });
+
+            $.each(chartData.labels, function (i, item) {
+                chart.data.labels.push(item);
+                chart.data.datasets[0].data.push(chartData.datasets[0].data[i]);
+                chart.data.datasets[1].data.push(chartData.datasets[1].data[i]);
+            });
+
+            chart.update();
+        }
+
+        function RefreshChart(newData) {
+
+            var chartData = {
+                labels: ["2010", "2011", "2012", "2013", "2014", "2015", "2016"],
+                type: 'line',
+                defaultFontFamily: 'Montserrat',
+                datasets: [{
+                    label: "New Registration",
+                    data: [0, 30, 10, 120, 50, 63, 10],
+                    backgroundColor: 'transparent',
+                    borderColor: 'rgba(220,53,69,0.75)',
+                    borderWidth: 3,
+                    pointStyle: 'circle',
+                    pointRadius: 5,
+                    pointBorderColor: 'transparent',
+                    pointBackgroundColor: 'rgba(220,53,69,0.75)',
+                },
+                {
+                    label: "Prediction",
+                    data: [0, 30, 10, 120, 50, 63, 10],
+                    backgroundColor: 'transparent',
+                    borderColor: 'rgba(40,167,69,0.75)  ',
+                    borderWidth: 3,
+                    pointStyle: 'circle',
+                    pointRadius: 5,
+                    pointBorderColor: 'transparent',
+                    pointBackgroundColor: 'rgba(40,167,69,0.75)',
+                }]
+            };
+
+            chartData.labels = newData.labels;
+            chartData.datasets[0].data = newData.datasets[0];
+            chartData.datasets[1].data = newData.datasets[1];
+
+            ReloadDataTable(chartData);
+
+            if (myChart != null) {
+                UpdateChart(myChart, chartData);
+            } else {
+
+                myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: chartData,
+                    options: {
+                        responsive: true,
+
+                        tooltips: {
+                            mode: 'index',
+                            titleFontSize: 12,
+                            titleFontColor: '#000',
+                            bodyFontColor: '#000',
+                            backgroundColor: '#fff',
+                            titleFontFamily: 'Montserrat',
+                            bodyFontFamily: 'Montserrat',
+                            cornerRadius: 3,
+                            intersect: false,
+                        },
+                        legend: {
+                            display: false,
+                            labels: {
+                                usePointStyle: true,
+                                fontFamily: 'Montserrat',
+                            },
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                gridLines: {
+                                    display: false,
+                                    drawBorder: false
+                                },
+                                scaleLabel: {
+                                    display: false,
+                                    labelString: 'Month'
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                gridLines: {
+                                    display: false,
+                                    drawBorder: false
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Value'
+                                }
+                            }]
+                        },
+                        title: {
+                            display: false,
+                            text: 'Normal Legend'
+                        }
+                    }
+                });
+            }
+        }
+
+
+        function ReloadData() {
+
+            var startDate = $('#txtStartDate').val();
+            var endDate = $('#txtEndDate').val();
+
+            var searchInfo = {};
+            searchInfo.search = {};
+            searchInfo.search.fields = ["startDate", "endDate"];
+            searchInfo.search.values = [startDate, endDate];
+
+            $.ajax({
+                url: '@Url.Content("~")Report/SearchTransactionSummary',
+                dataType: "json",
+                method: "POST",
+                data: {
+                    searchInfo
+                },
+                success: function (data) {
+
+                    var list = data.data;
+
+                    var chartData = {};
+                    chartData.labels = [];
+                    chartData.datasets = [[],[]];
+
+                    $.each(list, function (i, item) {
+
+                        if (i % 2 == 0) {
+                            chartData.labels.push(item.RecordedDateString);
+                        }
+
+                        if (item.TranxType == 'REGISTER') {
+                            chartData.datasets[0].push(item.Total);
+                        } else {
+                            chartData.datasets[1].push(item.Total);
+                        }
+                    });
+                    RefreshChart(chartData);
+                }
+                });
+        }
+
+        InitControls();
+
+    </script>
+}

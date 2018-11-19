@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="583c962721e344d5abab8f3946b988fb" Name="Diagram1">
+        <EntityTypeShape EntityType="Data.ApplicationMaster" Width="1.5" PointX="0.75" PointY="5.375" />
+        <EntityTypeShape EntityType="Data.DateMaster" Width="1.5" PointX="0.75" PointY="8.875" />
+        <EntityTypeShape EntityType="Data.FunctionMaster" Width="1.5" PointX="5.25" PointY="5.125" />
+        <EntityTypeShape EntityType="Data.GroupMaster" Width="1.5" PointX="5.25" PointY="0.75" />
+        <EntityTypeShape EntityType="Data.MenuMaster" Width="1.5" PointX="7.5" PointY="7.625" />
+        <EntityTypeShape EntityType="Data.ModuleMaster" Width="1.5" PointX="3" PointY="5.25" />
+        <EntityTypeShape EntityType="Data.Permission" Width="1.5" PointX="7.5" PointY="4.125" />
+        <EntityTypeShape EntityType="Data.Person" Width="1.5" PointX="9.75" PointY="3.125" />
+        <EntityTypeShape EntityType="Data.Photo" Width="1.5" PointX="12" PointY="3.625" />
+        <EntityTypeShape EntityType="Data.TransactionMaster" Width="1.5" PointX="2.75" PointY="8.875" />
+        <EntityTypeShape EntityType="Data.TransactionSummary" Width="1.5" PointX="4.75" PointY="8.875" />
+        <EntityTypeShape EntityType="Data.UserGroup" Width="1.5" PointX="7.5" PointY="1.25" />
+        <EntityTypeShape EntityType="Data.UserMaster" Width="1.5" PointX="5.25" PointY="12.125" />
+        <AssociationConnector Association="Data.FK_ModuleMaster_ApplicationMaster" />
+        <AssociationConnector Association="Data.FK_FunctionMaster_ModuleMaster" />
+        <AssociationConnector Association="Data.FK_MenuMaster_FunctionMaster" />
+        <AssociationConnector Association="Data.FK_Permission_FunctionMaster" />
+        <AssociationConnector Association="Data.FK_Permission_GroupMaster" />
+        <AssociationConnector Association="Data.FK_UserGroup_GroupMaster" />
+        <AssociationConnector Association="Data.FK_PersonID" />
+        <AssociationConnector Association="Data.FK_UserGroup_UserMaster" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
